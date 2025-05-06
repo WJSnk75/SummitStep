@@ -4,6 +4,7 @@ import { supabase } from "@/services/supabaseClient";
 import CheckInButton from "@/components/CheckInButton";
 import DailyCheckinsTable from "@/components/DailyCheckinsTable";
 import TopCheckinUsers from "@/components/TopCheckinUsers";
+import Countdown from "@/components/Countdown";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -89,6 +90,7 @@ export default function Dashboard() {
       <h1 className="text-3xl font-bold mb-4 text-center">
         Welkom bij SummitStep, {user.email.split("@")[0]} 👋
       </h1>
+      <Countdown />
       <p className="mb-6 text-gray-700 text-center">
         Check dagelijks in om samen te trainen richting de top van de Kilimanjaro 🏔️
       </p>
