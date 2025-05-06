@@ -2,22 +2,20 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/services/supabaseClient";
 import CheckInButton from "@/components/CheckInButton";
-import CalendarHeatmap from "react-calendar-heatmap";
-import { subDays } from "date-fns";
-import "react-calendar-heatmap/dist/styles.css";
+import DailyCheckinsTable from "@/components/DailyCheckinsTable";
+import TopCheckinUsers from "@/components/TopCheckinUsers";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [streak, setStreak] = useState(0);
   const [totalDays, setTotalDays] = useState(0);
   const [checkInsToday, setCheckInsToday] = useState(0);
-  const [heatmapData, setHeatmapData] = useState([]);
 
   useEffect(() => {
     if (user) {
       fetchPersonalStats();
       fetchGlobalStats();
-      fetchCalendarData();
+      
     }
   }, [user]);
 
@@ -76,32 +74,6 @@ export default function Dashboard() {
     setCheckInsToday(uniqueUserIds.length);
   };
 
-  const fetchCalendarData = async () => {
-    const { data, error } = await supabase
-      .from("daily_logs")
-      .select("date, user_id");
-
-    if (error) {
-      console.error("❌ Fout bij kalenderdata:", error);
-      return;
-    }
-
-    const grouped = {};
-    for (let entry of data) {
-      const date = entry.date;
-      const userId = entry.user_id;
-      if (!grouped[date]) grouped[date] = new Set();
-      grouped[date].add(userId);
-    }
-
-    const result = Object.keys(grouped).map((date) => ({
-      date,
-      count: grouped[date].size,
-    }));
-
-    setHeatmapData(result);
-  };
-
   const parseDate = (str) => {
     const [y, m, d] = str.split("-");
     return new Date(+y, +m - 1, +d);
@@ -125,7 +97,6 @@ export default function Dashboard() {
         onCheckIn={() => {
           fetchPersonalStats();
           fetchGlobalStats();
-          fetchCalendarData();
         }}
       />
 
@@ -142,39 +113,13 @@ export default function Dashboard() {
         </div>
       </div>
 
+
+      <div className="mt-6"> 
+      <TopCheckinUsers />
+      </div>
+
       <div className="mt-12 w-full max-w-3xl text-center">
-        <h2 className="text-xl font-bold mb-4">Activiteit laatste 14 dagen</h2>
-        <CalendarHeatmap
-  startDate={subDays(new Date(), 13)}
-  endDate={new Date()}
-  values={heatmapData}
-  showWeekdayLabels={true}
-  classForValue={(value) => {
-    if (!value || value.count === 0) return "color-0";
-    if (value.count === 1) return "color-1";
-    if (value.count === 2) return "color-2";
-    if (value.count === 3) return "color-3";
-    if (value.count === 4) return "color-4";
-    return "color-5"; // 5 of meer
-  }}
-  tooltipDataAttrs={(value) =>
-    value.date
-      ? {
-          "data-tip": `${value.count} gebruikers op ${value.date}`,
-        }
-      : { "data-tip": "Geen data" }
-  }
-  transformDayElement={(el, value) =>
-    React.cloneElement(el, {
-      children:
-        value && value.count > 0 ? (
-          <text x="5" y="9" fontSize="6" fill="white">
-            {value.count}
-          </text>
-        ) : null,
-    })
-  }
-/>
+        <DailyCheckinsTable />
       </div>
     </div>
   );
