@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.color-0 {
+    fill: #ebedf0;
+  }
+  .color-1 {
+    fill: #b6e3a8;
+  }
+  .color-2 {
+    fill: #7bc96f;
+  }
+  .color-3 {
+    fill: #329a3c;
+  }
+  .color-4 {
+    fill: #1f6025;
+  }
+  .color-5 {
+    fill: #0e3e17;
+  }
+  /* Kleiner maken */
+.react-calendar-heatmap .react-calendar-heatmap-week rect {
+    rx: 2px;
+    ry: 2px;
+    width: 10px;
+    height: 10px;
+  }
+  
+  /* Tekst kleiner */
+  .react-calendar-heatmap text {
+    font-size: 6px;
+  }
